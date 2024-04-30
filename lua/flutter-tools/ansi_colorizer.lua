@@ -116,4 +116,9 @@ function M.highlight_ansi_colors(bufnr)
   highlight_ansi_colors(bufnr)
 end
 
+function M.conceal_ansi_color_codes()
+  vim.cmd([[set conceallevel=2]])
+  vim.cmd([[syntax match ConcealANSI /[^m]*m/ conceal]])
+end
+
 return M
