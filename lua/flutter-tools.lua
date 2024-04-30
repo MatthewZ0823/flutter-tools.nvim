@@ -13,6 +13,7 @@ local lsp = lazy.require("flutter-tools.lsp") ---@module "flutter-tools.lsp"
 local outline = lazy.require("flutter-tools.outline") ---@module "flutter-tools.outline"
 local devices = lazy.require("flutter-tools.devices") ---@module "flutter-tools.devices"
 local utils = lazy.require("flutter-tools.utils") ---@module "flutter-tools.utils"
+local ansi_colorizer = lazy.require("ansi_colorizer") ---@module "flutter-tools.ansi_colorizer"
 
 local api = vim.api
 
