@@ -12,7 +12,7 @@ local function dump(o)
 end
 
 local default_colors = vim.api.nvim_get_hl(0, { name = "Normal" })
-local ansicolors = {
+local ansicolors_fg = {
   [30] = '#000000',
   [31] = '#CC0000',
   [32] = '#4E9A06',
@@ -22,6 +22,17 @@ local ansicolors = {
   [36] = '#06989A',
   [37] = '#D3D7CF',
   [39] = string.format('#%06X', default_colors['fg']),
+}
+local ansicolors_bg = {
+  [40] = '#000000',
+  [41] = '#CC0000',
+  [42] = '#4E9A06',
+  [43] = '#C4A000',
+  [44] = '#729FCF',
+  [45] = '#75507B',
+  [46] = '#06989A',
+  [47] = '#D3D7CF',
+  [49] = string.format('#%06X', default_colors['bg']),
 }
 
 local function parse_ansi_colors(line)
@@ -42,17 +53,25 @@ local function parse_ansi_colors(line)
       table.insert(parsed_line, text_before_escape)
     end
 
-    local color = ansicolors[tonumber(color_code)]
-    if color then
+    local fg_color = ansicolors_fg[tonumber(color_code)]
+    local bg_color = ansicolors_bg[tonumber(color_code)]
+
+    if fg_color == nil and bg_color == nil then
+      table.insert(parsed_line, string.sub(remaining_line, escape_start, escape_end))
+      remaining_line = string.sub(remaining_line, escape_end + 1)
+    else
       local text_start = escape_end + 1
       local text_end = string.find(remaining_line, '\27%[', text_start) or #remaining_line
       local text = string.sub(remaining_line, text_start, text_end - 1)
 
-      table.insert(parsed_line, { escape_length = escape_end - escape_start + 1, text = text, color = color })
+      if fg_color then
+        table.insert(parsed_line, { escape_length = escape_end - escape_start + 1, text = text, fg_color = fg_color })
+      end
+      if bg_color then
+        table.insert(parsed_line, { escape_length = escape_end - escape_start + 1, text = text, bg_color = bg_color })
+      end
+
       remaining_line = string.sub(remaining_line, text_end)
-    else
-      table.insert(parsed_line, string.sub(remaining_line, escape_start, escape_end))
-      remaining_line = string.sub(remaining_line, escape_end + 1)
     end
   end
 
@@ -74,12 +93,13 @@ local function highlight_ansi_colors(bufnr)
     for _, part in ipairs(parsed_line) do
       if type(part) == 'table' then
         local text = part.text
-        local color = part.color
+        local fg_color = part.fg_color or ""
+        local bg_color = part.bg_color or ""
         local escape_length = part.escape_length
-        local hl_group = 'AnsiColor' .. color:gsub("#", "")
+        local hl_group = 'AnsiColor' .. 'fg' .. fg_color:gsub("#", "") .. 'bg' .. bg_color:gsub("#", "")
 
         col = col + escape_length
-        vim.api.nvim_set_hl(0, hl_group, { fg = color })
+        vim.api.nvim_set_hl(0, hl_group, { fg = fg_color, bg = bg_color })
         vim.api.nvim_buf_add_highlight(bufnr, -1, hl_group, i - 1, col, col + #text)
         col = col + #text
       else
