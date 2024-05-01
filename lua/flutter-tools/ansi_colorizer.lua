@@ -51,17 +51,6 @@ local function get_colors_by_id(id)
 
   return nil
 end
-local function get_colors_by_id(id)
-  for _, base16_color in ipairs(base16_colors) do
-    if id == base16_color.fg_id then
-      return 'fg', base16_color.color
-    elseif id == base16_color.bg_id then
-      return 'bg', base16_color.color
-    end
-  end
-
-  return nil
-end
 
 local function parse_ansi_colors(line)
   local parsed_line = {}
