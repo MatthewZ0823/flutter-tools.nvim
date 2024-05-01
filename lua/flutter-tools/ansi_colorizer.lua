@@ -12,28 +12,56 @@ local function dump(o)
 end
 
 local default_colors = vim.api.nvim_get_hl(0, { name = "Normal" })
-local ansicolors_fg = {
-  [30] = '#000000',
-  [31] = '#CC0000',
-  [32] = '#4E9A06',
-  [33] = '#C4A000',
-  [34] = '#729FCF',
-  [35] = '#75507B',
-  [36] = '#06989A',
-  [37] = '#D3D7CF',
-  [39] = string.format('#%06X', default_colors['fg']),
+local default_fg = string.format('#%06X', default_colors['fg'])
+local default_bg = string.format('#%06X', default_colors['bg'])
+
+local base16_colors = {
+  { color = "#2e3436",  fg_id = 30, bg_id = 40 },  -- Black
+  { color = "#cc0000",  fg_id = 31, bg_id = 41 },  -- Red
+  { color = "#4e9a06",  fg_id = 32, bg_id = 42 },  -- Green
+  { color = "#c4a000",  fg_id = 33, bg_id = 43 },  -- Yellow
+  { color = "#729fcf",  fg_id = 34, bg_id = 44 },  -- Blue
+  { color = "#75507b",  fg_id = 35, bg_id = 45 },  -- Magenta
+  { color = "#06989a",  fg_id = 36, bg_id = 46 },  -- Cyan
+  { color = "#d3d7cf",  fg_id = 37, bg_id = 47 },  -- White
+  { color = "#555753",  fg_id = 90, bg_id = 100 }, -- Bright Black
+  { color = "#ef2929",  fg_id = 91, bg_id = 101 }, -- Bright Red
+  { color = "#8ae234",  fg_id = 92, bg_id = 102 }, -- Bright Green
+  { color = "#fce94f",  fg_id = 93, bg_id = 103 }, -- Bright Yellow
+  { color = "#32afff",  fg_id = 94, bg_id = 104 }, -- Bright Blue
+  { color = "#ad7fa8",  fg_id = 95, bg_id = 105 }, -- Bright Magenta
+  { color = "#34e2e2",  fg_id = 96, bg_id = 106 }, -- Bright Cyan
+  { color = "#eeeeec",  fg_id = 97, bg_id = 107 }, -- Bright White
+  { color = default_fg, fg_id = 39 },              -- Default fg
+  { color = default_bg, bg_id = 49 },              -- Default bg
 }
-local ansicolors_bg = {
-  [40] = '#000000',
-  [41] = '#CC0000',
-  [42] = '#4E9A06',
-  [43] = '#C4A000',
-  [44] = '#729FCF',
-  [45] = '#75507B',
-  [46] = '#06989A',
-  [47] = '#D3D7CF',
-  [49] = string.format('#%06X', default_colors['bg']),
-}
+
+-- Retrieves the type (foreground or background) and the hexadecimal representation of a color corresponding to the provided ID.
+-- It returns two values: a string indicating the color type ("fg" for foreground or "bg" for background),
+-- and the corresponding color value.
+-- If no match is found, it returns nil.
+local function get_colors_by_id(id)
+  for _, base16_color in ipairs(base16_colors) do
+    if id == base16_color.fg_id then
+      return "fg", base16_color.color
+    elseif id == base16_color.bg_id then
+      return "bg", base16_color.color
+    end
+  end
+
+  return nil
+end
+local function get_colors_by_id(id)
+  for _, base16_color in ipairs(base16_colors) do
+    if id == base16_color.fg_id then
+      return 'fg', base16_color.color
+    elseif id == base16_color.bg_id then
+      return 'bg', base16_color.color
+    end
+  end
+
+  return nil
+end
 
 local function parse_ansi_colors(line)
   local parsed_line = {}
@@ -53,10 +81,9 @@ local function parse_ansi_colors(line)
       table.insert(parsed_line, text_before_escape)
     end
 
-    local fg_color = ansicolors_fg[tonumber(color_code)]
-    local bg_color = ansicolors_bg[tonumber(color_code)]
+    local type, color = get_colors_by_id(tonumber(color_code))
 
-    if fg_color == nil and bg_color == nil then
+    if color == nil then
       table.insert(parsed_line, string.sub(remaining_line, escape_start, escape_end))
       remaining_line = string.sub(remaining_line, escape_end + 1)
     else
@@ -64,12 +91,13 @@ local function parse_ansi_colors(line)
       local text_end = string.find(remaining_line, '\27%[', text_start) or #remaining_line
       local text = string.sub(remaining_line, text_start, text_end - 1)
 
-      if fg_color then
-        table.insert(parsed_line, { escape_length = escape_end - escape_start + 1, text = text, fg_color = fg_color })
+      local parsed_token = { escape_length = escape_end - escape_start + 1, text = text }
+      if type == 'fg' then
+        parsed_token.fg_color = color
+      elseif type == 'bg' then
+        parsed_token.bg_color = color
       end
-      if bg_color then
-        table.insert(parsed_line, { escape_length = escape_end - escape_start + 1, text = text, bg_color = bg_color })
-      end
+      table.insert(parsed_line, parsed_token)
 
       remaining_line = string.sub(remaining_line, text_end)
     end
