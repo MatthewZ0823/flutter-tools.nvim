@@ -70,9 +70,19 @@ local function parse_ansi_colors(line)
       table.insert(parsed_line, text_before_escape)
     end
 
-    local type, color = get_colors_by_id(tonumber(color_code))
+    local parsed_token = {}
 
-    if color == nil then
+    -- Parse all the colors in the escape sequence
+    for color_id in string.gmatch(color_code, "([^;]+)") do
+      local type, color = get_colors_by_id(tonumber(color_id))
+      if type == 'fg' then
+        parsed_token.fg_color = color
+      elseif type == 'bg' then
+        parsed_token.bg_color = color
+      end
+    end
+
+    if parsed_token.fg_color == nil and parsed_token.bg_color == nil then
       table.insert(parsed_line, string.sub(remaining_line, escape_start, escape_end))
       remaining_line = string.sub(remaining_line, escape_end + 1)
     else
@@ -80,12 +90,8 @@ local function parse_ansi_colors(line)
       local text_end = string.find(remaining_line, '\27%[', text_start) or #remaining_line
       local text = string.sub(remaining_line, text_start, text_end - 1)
 
-      local parsed_token = { escape_length = escape_end - escape_start + 1, text = text }
-      if type == 'fg' then
-        parsed_token.fg_color = color
-      elseif type == 'bg' then
-        parsed_token.bg_color = color
-      end
+      parsed_token.escape_length = escape_end - escape_start + 1
+      parsed_token.text = text
       table.insert(parsed_line, parsed_token)
 
       remaining_line = string.sub(remaining_line, text_end)
