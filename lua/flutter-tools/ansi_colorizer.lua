@@ -1,16 +1,3 @@
-local function dump(o)
-  if type(o) == "table" then
-    local s = "{ "
-    for k, v in pairs(o) do
-      if type(k) ~= "number" then k = '"' .. k .. '"' end
-      s = s .. "[" .. k .. "] = " .. dump(v) .. ","
-    end
-    return s .. "} "
-  else
-    return tostring(o)
-  end
-end
-
 local base16_colors = {
   { color = "#000000", fg_id = 30, bg_id = 40 },  -- Black
   { color = "#800000", fg_id = 31, bg_id = 41 },  -- Red
