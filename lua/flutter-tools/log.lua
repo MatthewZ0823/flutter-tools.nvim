@@ -1,6 +1,7 @@
 local lazy = require("flutter-tools.lazy")
 local ui = lazy.require("flutter-tools.ui") ---@module "flutter-tools.ui"
 local utils = lazy.require("flutter-tools.utils") ---@module "flutter-tools.utils"
+local ansi_colorizer = lazy.require("flutter-tools.ansi_colorizer") ---@module "flutter-tools.ansi_colorizer"
 
 local api = vim.api
 local fmt = string.format
@@ -88,6 +89,8 @@ function M.log(data, opts)
   if opts.enabled then
     if not exists() then create(opts) end
     append(M.buf, { data })
+    ansi_colorizer.highlight_ansi_colors(M.buf)
+    ansi_colorizer.conceal_ansi_color_codes()
     autoscroll(M.buf, M.win)
   end
 end
