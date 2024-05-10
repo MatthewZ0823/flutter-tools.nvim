@@ -12,22 +12,22 @@ local function dump(o)
 end
 
 local base16_colors = {
-  { color = "#2e3436", fg_id = 30, bg_id = 40 },  -- Black
-  { color = "#cc0000", fg_id = 31, bg_id = 41 },  -- Red
-  { color = "#4e9a06", fg_id = 32, bg_id = 42 },  -- Green
-  { color = "#c4a000", fg_id = 33, bg_id = 43 },  -- Yellow
-  { color = "#729fcf", fg_id = 34, bg_id = 44 },  -- Blue
-  { color = "#75507b", fg_id = 35, bg_id = 45 },  -- Magenta
-  { color = "#06989a", fg_id = 36, bg_id = 46 },  -- Cyan
-  { color = "#d3d7cf", fg_id = 37, bg_id = 47 },  -- White
-  { color = "#555753", fg_id = 90, bg_id = 100 }, -- Bright Black
-  { color = "#ef2929", fg_id = 91, bg_id = 101 }, -- Bright Red
-  { color = "#8ae234", fg_id = 92, bg_id = 102 }, -- Bright Green
-  { color = "#fce94f", fg_id = 93, bg_id = 103 }, -- Bright Yellow
-  { color = "#32afff", fg_id = 94, bg_id = 104 }, -- Bright Blue
-  { color = "#ad7fa8", fg_id = 95, bg_id = 105 }, -- Bright Magenta
-  { color = "#34e2e2", fg_id = 96, bg_id = 106 }, -- Bright Cyan
-  { color = "#eeeeec", fg_id = 97, bg_id = 107 }, -- Bright White
+  { color = "#000000", fg_id = 30, bg_id = 40 },  -- Black
+  { color = "#800000", fg_id = 31, bg_id = 41 },  -- Red
+  { color = "#008000", fg_id = 32, bg_id = 42 },  -- Green
+  { color = "#808000", fg_id = 33, bg_id = 43 },  -- Yellow
+  { color = "#000080", fg_id = 34, bg_id = 44 },  -- Blue
+  { color = "#800080", fg_id = 35, bg_id = 45 },  -- Magenta
+  { color = "#008080", fg_id = 36, bg_id = 46 },  -- Cyan
+  { color = "#c0c0c0", fg_id = 37, bg_id = 47 },  -- White
+  { color = "#808080", fg_id = 90, bg_id = 100 }, -- Bright Black
+  { color = "#ff0000", fg_id = 91, bg_id = 101 }, -- Bright Red
+  { color = "#00ff00", fg_id = 92, bg_id = 102 }, -- Bright Green
+  { color = "#ffff00", fg_id = 93, bg_id = 103 }, -- Bright Yellow
+  { color = "#0000ff", fg_id = 94, bg_id = 104 }, -- Bright Blue
+  { color = "#ff00ff", fg_id = 95, bg_id = 105 }, -- Bright Magenta
+  { color = "#00ffff", fg_id = 96, bg_id = 106 }, -- Bright Cyan
+  { color = "#ffffff", fg_id = 97, bg_id = 107 }, -- Bright White
   { color = nil,       fg_id = 39 },              -- Default fg
   { color = nil,       bg_id = 49 },              -- Default bg
 }
